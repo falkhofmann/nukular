@@ -32,7 +32,7 @@ fi
 echo "$FOLDER/Nuke*"
 for nukeFolder in "$FOLDER/Nuke"*; do
     if [ -d "$nukeFolder" ]; then
-        VERSION="Nuke"${nukeFolder[@]/"$FOLDER/Nuke"/""}
+        VERSION=${nukeFolder[@]/"$FOLDER/Nuke"/""}
 
         mkdir build/$VERSION
         if [ $SYSTEM = "windows" ]; then
@@ -43,19 +43,18 @@ for nukeFolder in "$FOLDER/Nuke"*; do
         
         cmake --build "build/$VERSION" --config Release
         cmake --install "build/$VERSION"
-        echo '------------------------------------------'
-        echo 'Finish building.'
-
+        echo '-------'
+        echo '-------'
 
         # Create zip archivs
 	
         if [ $SYSTEM = "windows" ]; then
-		powershell Compress-Archive -LiteralPath "$BASEDIR/$INSTALL/$VERSION" -DestinationPath "./release/DeepC-Linux-$VERSION.zip" -Force
+		powershell Compress-Archive -LiteralPath "$BASEDIR/$INSTALL/$VERSION" -DestinationPath "./release/fhofmann-Linux-Nuke$VERSION.zip" -Force
 	else
         cd $BASEDIR/$INSTALL/$VERSION
-        zip -r DeepC-Linux-$VERSION.zip *
-        mv DeepC-Linux-$VERSION.zip $BASEDIR/release/
-
+        zip -r fhofmann-Linux-Nuke$VERSION.zip *
+        mv fhofmann-Linux-Nuke$VERSION.zip $BASEDIR/release/
+        cd $BASEDIR
         fi       
     fi
 done
