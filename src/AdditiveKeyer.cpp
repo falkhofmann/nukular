@@ -13,22 +13,20 @@ class AdditiveKeyer : public PixelIop
 {
 
     double _ref_color[3];
-    // bool _enable_ref_color;
     int _saturation_mode;
     double _saturation;
     double _highlights;
-    double _inverse_highlights;
-    bool _compensate;
+    double _negative;
+    bool _enable_negative;
 
 public:
     void in_channels(int input, ChannelSet &mask) const override;
     AdditiveKeyer(Node *node) : PixelIop(node),
-                                // _enable_ref_color(false),
                                 _saturation_mode(0),
                                 _saturation(0.0f),
                                 _highlights(0.0f),
-                                _inverse_highlights(0.0f),
-                                _compensate(true)
+                                _negative(0.0f),
+                                _enable_negative(false)
 
     {
         inputs(2);
@@ -102,7 +100,6 @@ void AdditiveKeyer::_validate(bool for_real)
     {
         _ref_color[i] = knob("ref_color")->get_value(i);
     }
-    _inverse_highlights = 1.0f / _highlights;
     copy_info();
     set_out_channels(Mask_All);
 }
@@ -144,50 +141,56 @@ void AdditiveKeyer::pixel_engine(const Row &in, int y, int x, int r,
         const float *END = screenR + (r - x);
         while (screenR < END)
         {
-            float bgRvalue = *bgA++;
-            float bgGvalue = *bgG++;
-            float bgBvalue = *bgB++;
+            float Rbgvalue = *bgA++;
+            float Gbgvalue = *bgG++;
+            float Bbgvalue = *bgB++;
 
-            float minusR = (*screenR++) - _ref_color[0];
-            float minusG = (*screenG++) - _ref_color[1];
-            float minusB = (*screenB++) - _ref_color[2];
+            float sR = *screenR++;
+            float sG = *screenG++;
+            float sB = *screenB++;
 
-            float y;
+            float Rminus = sR - _ref_color[0];
+            float Gminus = sG - _ref_color[1];
+            float Bminus = sB - _ref_color[2];
+
+            float luma;
             switch (_saturation_mode)
             {
             case REC709:
-                y = y_convert_rec709(minusR, minusG, minusB);
+                luma = y_convert_rec709(Rminus, Gminus, Bminus);
                 break;
             case CCIR601:
-                y = y_convert_ccir601(minusR, minusG, minusB);
+                luma = y_convert_ccir601(Rminus, Gminus, Bminus);
                 break;
             case AVERAGE:
-                y = y_convert_avg(minusR, minusG, minusB);
+                luma = y_convert_avg(Rminus, Gminus, Bminus);
                 break;
 
             case MAXIMUM:
-                y = y_convert_max(minusR, minusG, minusB);
+                luma = y_convert_max(Rminus, Gminus, Bminus);
                 break;
             }
 
-            float desatR = clamp(lerp(y, minusR, _saturation), 0, 1000);
-            float desatG = clamp(lerp(y, minusG, _saturation), 0, 1000);
-            float desatB = clamp(lerp(y, minusB, _saturation), 0, 1000);
+            float desatR = lerp(luma, Rminus, (float)_saturation);
+            float desatG = lerp(luma, Gminus, (float)_saturation);
+            float desatB = lerp(luma, Bminus, (float)_saturation);
 
-            float valRed = (bgRvalue + (_highlights * (desatR * bgRvalue)));
-            float valGreen = (bgGvalue + (_highlights * (desatG * bgGvalue)));
-            float valBlue = (bgBvalue + (_highlights * (desatB * bgBvalue)));
+            Vector3 brights;
+            brights.x = _highlights * (clamp(desatR, 0, 1000) * Rbgvalue);
+            brights.y = _highlights * (clamp(desatG, 0, 1000) * Gbgvalue);
+            brights.z = _highlights * (clamp(desatB, 0, 1000) * Bbgvalue);
 
-            if (_compensate)
+            Vector3 darks(0.0, 0.0, 0.0);
+            if (_enable_negative)
             {
-                valRed *= _inverse_highlights;
-                valGreen *= _inverse_highlights;
-                valBlue *= _inverse_highlights;
+                darks.x = _negative * (clamp(desatR, -1000, 0) * Rbgvalue);
+                darks.y = _negative * (clamp(desatG, -1000, 0) * Gbgvalue);
+                darks.z = _negative * (clamp(desatB, -1000, 0) * Bbgvalue);
             }
 
-            *rOut++ = valRed;
-            *gOut++ = valGreen;
-            *bOut++ = valBlue;
+            *rOut++ = Rbgvalue + (brights.x + darks.x);
+            *gOut++ = Gbgvalue + (brights.y + darks.y);
+            *bOut++ = Bbgvalue + (brights.z + darks.z);
         }
     }
 }
@@ -202,8 +205,9 @@ void AdditiveKeyer::knobs(Knob_Callback f)
     Enumeration_knob(f, &_saturation_mode, mode_names, "mode", "luminance math");
     Tooltip(f, "Choose a mode to apply the greyscale conversion.");
     Double_knob(f, &_saturation, IRange(0.0, 1), "saturation", "saturation");
-    Double_knob(f, &_highlights, IRange(0.0, 10), "highlights", "highlights");
-    Bool_knob(f, &_compensate, "compensate", "compensate highlight");
+    Double_knob(f, &_highlights, IRange(0.0, 5), "highlights", "highlights");
+    Double_knob(f, &_negative, IRange(0.0, 5), "negative", "negative");
+    Bool_knob(f, &_enable_negative, "_enable_negative", "enable _negative");
     SetFlags(f, Knob::STARTLINE);
     Divider(f);
 }
