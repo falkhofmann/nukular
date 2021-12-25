@@ -1,9 +1,11 @@
 set(PLUGINS
     CircularRamp
+    Vibrant
     )
 
 # Python Menu
 set(DRAW_NODES CircularRamp)
+set(COLOR_NODES Vibrant)
 
 # add nuke plugin linked to ddimage lib
 function(add_nuke_plugin PLUGIN_NAME)
@@ -26,6 +28,7 @@ endforeach()
 
 # create menu file 
 string(REPLACE ";" "\", \"" DRAW_NODES "\"${DRAW_NODES}\"")
+string(REPLACE ";" "\", \"" COLOR_NODES "\"${COLOR_NODES}\"")
 configure_file(../python/menu.py.in menu.py)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/menu.py" DESTINATION .)
