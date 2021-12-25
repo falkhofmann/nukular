@@ -1,0 +1,21 @@
+import nuke
+
+
+def create_plugins_menu():
+    menus = {
+        "Draw": {"icon": "ToolbarDraw.png",
+                 "nodes": [@DRAW_NODES@]},
+    }
+
+    toolbar = nuke.menu("Nodes")
+    DeepCMenu = toolbar.addMenu("fhofmann", icon="godzilla.png")
+
+    for menu, entry in menus.items():
+        new = DeepCMenu.addMenu(menu, icon=entry["icon"])
+
+        for node in entry.get("nodes"):
+            new.addCommand(node, "nuke.createNode('{}')".format(
+                node), icon="{}.png".format(node))
+
+
+create_plugins_menu()
