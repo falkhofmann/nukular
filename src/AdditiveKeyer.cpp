@@ -4,6 +4,7 @@ static const char *const HELP = "Additive keyer as plugin.";
 #include "DDImage/Row.h"
 #include "DDImage/Knobs.h"
 #include "DDImage/DDMath.h"
+#include "DDImage/RGB.h"
 #include "DDImage/NukeWrapper.h"
 
 using namespace DD::Image;
@@ -11,23 +12,27 @@ using namespace DD::Image;
 class AdditiveKeyer : public PixelIop
 {
 
-    double _user_color[3];
-    bool _enable_user_color;
+    double _ref_color[3];
+    // bool _enable_ref_color;
+    int _saturation_mode;
     double _saturation;
     double _highlights;
     double _inverse_highlights;
+    bool _compensate;
 
 public:
     void in_channels(int input, ChannelSet &mask) const override;
     AdditiveKeyer(Node *node) : PixelIop(node),
-                                _enable_user_color(false),
+                                // _enable_ref_color(false),
+                                _saturation_mode(0),
                                 _saturation(0.0f),
                                 _highlights(0.0f),
-                                _inverse_highlights(0.0f)
+                                _inverse_highlights(0.0f),
+                                _compensate(true)
 
     {
         inputs(2);
-        _user_color[0] = _user_color[1] = _user_color[2] = 0.0f;
+        _ref_color[0] = _ref_color[1] = _ref_color[2] = 0.0f;
     }
 
     const char *input_label(int n, char *) const override
@@ -52,6 +57,27 @@ public:
     void _validate(bool) override;
 };
 
+enum
+{
+    REC709 = 0,
+    CCIR601,
+    AVERAGE,
+    MAXIMUM
+};
+
+static const char *mode_names[] = {
+    "Rec 709", "Ccir 601", "Average", "Maximum", nullptr};
+
+static inline float y_convert_ccir601(float r, float g, float b)
+{
+    return r * 0.299f + g * 0.587f + b * 0.114f;
+}
+
+static inline float y_convert_avg(float r, float g, float b)
+{
+    return (r + g + b) / 3.0f;
+}
+
 static inline float y_convert_max(float r, float g, float b)
 {
     if (g > r)
@@ -61,13 +87,22 @@ static inline float y_convert_max(float r, float g, float b)
     return r;
 }
 
+static inline float y_convert_min(float r, float g, float b)
+{
+    if (g < r)
+        r = g;
+    if (b < r)
+        r = b;
+    return r;
+}
+
 void AdditiveKeyer::_validate(bool for_real)
 {
     for (int i = 0; i < 3; i++)
     {
-        _user_color[i] = knob("user_color")->get_value(i);
+        _ref_color[i] = knob("ref_color")->get_value(i);
     }
-    _inverse_highlights = 1 - (_highlights / 10.0f);
+    _inverse_highlights = 1.0f / _highlights;
     copy_info();
     set_out_channels(Mask_All);
 }
@@ -113,23 +148,46 @@ void AdditiveKeyer::pixel_engine(const Row &in, int y, int x, int r,
             float bgGvalue = *bgG++;
             float bgBvalue = *bgB++;
 
-            float sR = *screenR++;
-            float sG = *screenG++;
-            float sB = *screenB++;
+            float minusR = (*screenR++) - _ref_color[0];
+            float minusG = (*screenG++) - _ref_color[1];
+            float minusB = (*screenB++) - _ref_color[2];
 
-            float desatR = sR - _user_color[0];
-            float desatG = sG - _user_color[1];
-            float desatB = sB - _user_color[2];
+            float y;
+            switch (_saturation_mode)
+            {
+            case REC709:
+                y = y_convert_rec709(minusR, minusG, minusB);
+                break;
+            case CCIR601:
+                y = y_convert_ccir601(minusR, minusG, minusB);
+                break;
+            case AVERAGE:
+                y = y_convert_avg(minusR, minusG, minusB);
+                break;
 
-            float y = y_convert_max(desatR, desatG, desatB);
+            case MAXIMUM:
+                y = y_convert_max(minusR, minusG, minusB);
+                break;
+            }
 
-            // float dR = clamp(lerp(y, desatR, _saturation), 0, 1000);
-            // float dG = clamp(lerp(y, desatG, _saturation), 0, 1000);
-            // float dB = clamp(lerp(y, desatB, _saturation), 0, 1000);
+            float desatR = clamp(lerp(y, minusR, _saturation), 0, 1000);
+            float desatG = clamp(lerp(y, minusG, _saturation), 0, 1000);
+            float desatB = clamp(lerp(y, minusB, _saturation), 0, 1000);
 
-            *rOut++ = _inverse_highlights * (bgRvalue + _highlights * (y * bgRvalue));
-            *gOut++ = _inverse_highlights * (bgGvalue + _highlights * (y * bgGvalue));
-            *bOut++ = _inverse_highlights * (bgBvalue + _highlights * (y * bgBvalue));
+            float valRed = (bgRvalue + (_highlights * (desatR * bgRvalue)));
+            float valGreen = (bgGvalue + (_highlights * (desatG * bgGvalue)));
+            float valBlue = (bgBvalue + (_highlights * (desatB * bgBvalue)));
+
+            if (_compensate)
+            {
+                valRed *= _inverse_highlights;
+                valGreen *= _inverse_highlights;
+                valBlue *= _inverse_highlights;
+            }
+
+            *rOut++ = valRed;
+            *gOut++ = valGreen;
+            *bOut++ = valBlue;
         }
     }
 }
@@ -137,12 +195,16 @@ void AdditiveKeyer::pixel_engine(const Row &in, int y, int x, int r,
 void AdditiveKeyer::knobs(Knob_Callback f)
 {
     Divider(f);
-    Color_knob(f, _user_color, "user_color", "User Color");
-    Bool_knob(f, &_enable_user_color, "Enable_user_color", "Enable User Color");
+    Color_knob(f, _ref_color, "ref_color", "ref color");
+    // Bool_knob(f, &_enable_ref_color, "enable_ref_color", "enable user color");
     SetFlags(f, Knob::STARTLINE);
     Divider(f);
-    Double_knob(f, &_saturation, "saturation", "Saturation");
-    Double_knob(f, &_highlights, "highlights", "highlights");
+    Enumeration_knob(f, &_saturation_mode, mode_names, "mode", "luminance math");
+    Tooltip(f, "Choose a mode to apply the greyscale conversion.");
+    Double_knob(f, &_saturation, IRange(0.0, 1), "saturation", "saturation");
+    Double_knob(f, &_highlights, IRange(0.0, 10), "highlights", "highlights");
+    Bool_knob(f, &_compensate, "compensate", "compensate highlight");
+    SetFlags(f, Knob::STARTLINE);
     Divider(f);
 }
 
