@@ -1,10 +1,11 @@
 set(PLUGINS
     CircularRamp
+    CircularRays
     Vibrant
     )
 
 # Python Menu
-set(DRAW_NODES CircularRamp)
+set(DRAW_NODES CircularRamp CircularRays)
 set(COLOR_NODES Vibrant)
 
 # add nuke plugin linked to ddimage lib

@@ -1,6 +1,6 @@
 
-static const char* const CLASS="CircularRamp";
-static const char* const HELP="A radial gradient";
+static const char *const CLASS = "CircularRays";
+static const char *const HELP = "Radial distributed rays.";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -12,13 +12,12 @@ static const char* const HELP="A radial gradient";
 using namespace DD::Image;
 using namespace std;
 
-
-class CircularRamp : public Iop
+class CircularRays : public Iop
 {
     Vector2 _center;
-    double rotate;
-    float start_c[4];
-    float end_c[4];
+    double _amount;
+    double _rotate;
+    float _color[4];
 
     Channel channel[4];
     FormatPair formats;
@@ -26,19 +25,18 @@ class CircularRamp : public Iop
     double _radians;
 
 public:
-    const char* Class() const { return CLASS; }
-    const char* node_help() const { return HELP; }
+    const char *Class() const { return CLASS; }
+    const char *node_help() const { return HELP; }
     static const Description desc;
 
-    CircularRamp(Node* node) : Iop(node)
+    CircularRays(Node *node) : Iop(node)
     {
         inputs(0);
-        const Format& format = input_format();
+        const Format &format = input_format();
         _center.x = format.width() / 2;
         _center.y = format.height() / 2;
 
-        start_c[0] = start_c[1] = start_c[2] = start_c[3] = 0.0f;
-        end_c[0] = end_c[1] = end_c[2] = end_c[3] = 1.0f;
+        _color[0] = _color[1] = _color[2] = _color[3] = 1.0f;
 
         channel[0] = Chan_Red;
         channel[1] = Chan_Green;
@@ -46,7 +44,8 @@ public:
         channel[3] = Chan_Alpha;
         formats.format(0);
 
-        rotate = 0;
+        _amount = 10;
+        _rotate = 0;
     };
 
     void _validate(bool for_real)
@@ -54,7 +53,7 @@ public:
         bool non_zero = false;
         info_.black_outside(false);
         ChannelSet tchan;
-        for (int i=0; i<4; i++)
+        for (int i = 0; i < 4; i++)
         {
             info_.turn_on(channel[i]);
         }
@@ -63,12 +62,12 @@ public:
         info_.format(*formats.format());
         info_.set(format());
 
-        _radians = rotate * M_PI/180;
+        _radians = _rotate * M_PI / 180;
     }
 
-    void engine(int y, int xx, int r, ChannelMask channels, Row& row)
+    void engine(int y, int xx, int r, ChannelMask channels, Row &row)
     {
-        for (int x=xx; x<r; x++)
+        for (int x = xx; x < r; x++)
         {
             float v_pos = (float)cos(_radians) *
                               (y - _center.y) +
@@ -77,15 +76,14 @@ public:
                               (y - _center.y) +
                           cos(_radians) * (x - _center.x) + _center.x;
 
-            for (int z=0; z<4; z++){
-                float* out = row.writable(channel[z]);
-                float a = (1 - (0.5 + (atan2(h_pos - _center.x, v_pos - _center.y) / (M_PI * 2)))) * start_c[z];
-                float b = (0.5 + (atan2(h_pos - _center.x, v_pos - _center.y) / (M_PI * 2))) * end_c[z];
-                out[x] = a+b;
+            for (int z = 0; z < 4; z++)
+            {
+                float *out = row.writable(channel[z]);
+                float a = (sin(atan2(h_pos - _center.x, v_pos - _center.y) * _amount)) * _color[z];
+                out[x] = a;
             }
         }
     };
-
 
     void knobs(Knob_Callback f)
     {
@@ -93,23 +91,22 @@ public:
         Format_knob(f, &formats, "Format");
         Tooltip(f, "Set the format you are want to create.");
         XY_knob(f, &_center[0], "center", "Center");
-        Tooltip(f, "Center to draw the ramp.");
-        Double_knob(f, &rotate, IRange(0, 360), "Rotate");
-        Tooltip(f, "Degress the ramp should be rotated.");
-        Divider(f, "");
+        Tooltip(f, "Center to draw the rays.");
+        Double_knob(f, &_amount, IRange(1, 500), "amount", "amount");
+        Tooltip(f, "Amount of rays to be created.");
+        Double_knob(f, &_rotate, IRange(0, 360), "Rotate");
+        Tooltip(f, "Degress the rays should be rotated.");
         Text_knob(f, "<b>Colors</b>");
         SetFlags(f, Knob::STARTLINE);
-        AColor_knob(f, start_c, "start_color", "Start");
-        Tooltip(f, "Color at the gradients start.");
-        AColor_knob(f, end_c, "end_color", "End");
-        Tooltip(f, "Color at the gradients end.");
+        AColor_knob(f, _color, "color", "color");
+        Tooltip(f, "Color of rays.");
+
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
-        Text_knob(f, "Date", "Oct 2021");
+        Text_knob(f, "Date", "Dez 2021");
         Text_knob(f, "Version", "1.0.0");
     }
-
 };
 
-static Iop* constructor(Node* node) { return new CircularRamp(node); }
-const Iop::Description CircularRamp::desc(CLASS, "Draw/CircularRamp", constructor);
+static Iop *constructor(Node *node) { return new CircularRays(node); }
+const Iop::Description CircularRays::desc(CLASS, "Draw/CircularRays", constructor);

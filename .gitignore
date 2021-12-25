@@ -41,6 +41,7 @@
 build
 install
 release
+temp
 
 .vscode
 build_copy_test.sh
