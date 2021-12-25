@@ -79,7 +79,7 @@ public:
             for (int z = 0; z < 4; z++)
             {
                 float *out = row.writable(channel[z]);
-                out[x] = sin(sqrt((h_pos - _center.x) * (h_pos - _center.x) + (v_pos - _center.y) * (v_pos - _center.y)) / _size);
+                out[x] = (sin(sqrt((h_pos - _center.x) * (h_pos - _center.x) + (v_pos - _center.y) * (v_pos - _center.y)) / _size)) * _color[z];
                 ;
             }
         }
@@ -91,13 +91,13 @@ public:
         Format_knob(f, &formats, "Format");
         Tooltip(f, "Set the format you are want to create.");
         XY_knob(f, &_center[0], "center", "Center");
-        Tooltip(f, "Center to draw the rays.");
+        Tooltip(f, "Center to draw the rings.");
         Double_knob(f, &_size, IRange(1, 500), "size", "size");
-        Tooltip(f, "Amount of rays to be created.");
-        Text_knob(f, "<b>Colors</b>");
+        Tooltip(f, "size of rings to be created.");
+        Text_knob(f, "<b>Color</b>");
         SetFlags(f, Knob::STARTLINE);
         AColor_knob(f, _color, "color", "color");
-        Tooltip(f, "Color of rays.");
+        Tooltip(f, "Color of rings.");
 
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");

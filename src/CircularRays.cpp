@@ -95,7 +95,7 @@ public:
         Tooltip(f, "Amount of rays to be created.");
         Double_knob(f, &_rotate, IRange(0, 360), "Rotate");
         Tooltip(f, "Degress the rays should be rotated.");
-        Text_knob(f, "<b>Colors</b>");
+        Text_knob(f, "<b>Color</b>");
         SetFlags(f, Knob::STARTLINE);
         AColor_knob(f, _color, "color", "color");
         Tooltip(f, "Color of rays.");
