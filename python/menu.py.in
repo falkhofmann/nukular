@@ -7,6 +7,8 @@ def create_plugins_menu():
                  "nodes": [@DRAW_NODES@]},
         "Color": {"icon": "ToolbarColor.png",
                   "nodes": [@COLOR_NODES@]},
+        "Filter": {"icon": "ToolbarColor.png",
+                  "nodes": [@FILTER_NODES@]},
     }
 
     toolbar = nuke.menu("Nodes")
