@@ -5,6 +5,8 @@ def create_plugins_menu():
     menus = {
         "Draw": {"icon": "ToolbarDraw.png",
                  "nodes": [@DRAW_NODES@]},
+        "Color": {"icon": "ToolbarColor.png",
+                  "nodes": [@COLOR_NODES@]},
     }
 
     toolbar = nuke.menu("Nodes")
