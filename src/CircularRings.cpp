@@ -1,6 +1,6 @@
 
-static const char *const CLASS = "CircularRays";
-static const char *const HELP = "Radial distributed rays.";
+static const char *const CLASS = "CircularRings";
+static const char *const HELP = "Radial distributed rings.";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -12,10 +12,10 @@ static const char *const HELP = "Radial distributed rays.";
 using namespace DD::Image;
 using namespace std;
 
-class CircularRays : public Iop
+class CircularRings : public Iop
 {
     Vector2 _center;
-    double _amount;
+    double _size;
     double _rotate;
     float _color[4];
 
@@ -29,7 +29,7 @@ public:
     const char *node_help() const { return HELP; }
     static const Description desc;
 
-    CircularRays(Node *node) : Iop(node)
+    CircularRings(Node *node) : Iop(node)
     {
         inputs(0);
         const Format &format = input_format();
@@ -44,7 +44,7 @@ public:
         channel[3] = Chan_Alpha;
         formats.format(0);
 
-        _amount = 10;
+        _size = 10;
         _rotate = 0;
     };
 
@@ -62,7 +62,7 @@ public:
         info_.format(*formats.format());
         info_.set(format());
 
-        _radians = _rotate * M_PI / 180;
+        _radians = M_PI / 180;
     }
 
     void engine(int y, int xx, int r, ChannelMask channels, Row &row)
@@ -79,7 +79,8 @@ public:
             for (int z = 0; z < 4; z++)
             {
                 float *out = row.writable(channel[z]);
-                out[x] = (sin(atan2(h_pos - _center.x, v_pos - _center.y) * _amount)) * _color[z];
+                out[x] = (sin(sqrt((h_pos - _center.x) * (h_pos - _center.x) + (v_pos - _center.y) * (v_pos - _center.y)) / _size)) * _color[z];
+                ;
             }
         }
     };
@@ -90,15 +91,13 @@ public:
         Format_knob(f, &formats, "Format");
         Tooltip(f, "Set the format you are want to create.");
         XY_knob(f, &_center[0], "center", "Center");
-        Tooltip(f, "Center to draw the rays.");
-        Double_knob(f, &_amount, IRange(1, 500), "amount", "amount");
-        Tooltip(f, "Amount of rays to be created.");
-        Double_knob(f, &_rotate, IRange(0, 360), "Rotate");
-        Tooltip(f, "Degress the rays should be rotated.");
+        Tooltip(f, "Center to draw the rings.");
+        Double_knob(f, &_size, IRange(1, 500), "size", "size");
+        Tooltip(f, "size of rings to be created.");
         Text_knob(f, "<b>Color</b>");
         SetFlags(f, Knob::STARTLINE);
         AColor_knob(f, _color, "color", "color");
-        Tooltip(f, "Color of rays.");
+        Tooltip(f, "Color of rings.");
 
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
@@ -107,5 +106,5 @@ public:
     }
 };
 
-static Iop *constructor(Node *node) { return new CircularRays(node); }
-const Iop::Description CircularRays::desc(CLASS, "Draw/CircularRays", constructor);
+static Iop *constructor(Node *node) { return new CircularRings(node); }
+const Iop::Description CircularRings::desc(CLASS, "Draw/CircularRings", constructor);
