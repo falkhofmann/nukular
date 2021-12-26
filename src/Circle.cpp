@@ -1,6 +1,8 @@
 
 static const char *const CLASS = "Circle";
-static const char *const HELP = "Creates a circle with falloff based on user defined center.";
+static const char *const HELP = "Creates a circle with falloff based on user defined center.\n\n"
+                                "Author: 12/2021, Falk Hofmann\n"
+                                "Version: 1.0.0";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -97,7 +99,7 @@ public:
 
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
-        Text_knob(f, "Date", "Dez 2021");
+        Text_knob(f, "Date", "12/2021");
         Text_knob(f, "Version", "1.0.0");
     }
 };

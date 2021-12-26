@@ -1,6 +1,8 @@
 
 static const char *const CLASS = "CircularRings";
-static const char *const HELP = "Radial distributed rings.";
+static const char *const HELP = "Radial distributed rings.\n\n"
+                                "Author: 12/2021, Falk Hofmann\n"
+                                "Version: 1.0.0";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -69,17 +71,10 @@ public:
     {
         for (int x = xx; x < r; x++)
         {
-            float v_pos = (float)cos(_radians) *
-                              (y - _center.y) +
-                          sin(_radians) * (x - _center.x) + _center.y;
-            float h_pos = (float)-sin(_radians) *
-                              (y - _center.y) +
-                          cos(_radians) * (x - _center.x) + _center.x;
-
             for (int z = 0; z < 4; z++)
             {
                 float *out = row.writable(channel[z]);
-                out[x] = (sin(sqrt((h_pos - _center.x) * (h_pos - _center.x) + (v_pos - _center.y) * (v_pos - _center.y)) / _size)) * _color[z];
+                out[x] = (sin(sqrt((x - _center.x) * (x - _center.x) + (y - _center.y) * (y - _center.y)) / _size)) * _color[z];
                 ;
             }
         }
@@ -101,10 +96,10 @@ public:
 
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
-        Text_knob(f, "Date", "Dez 2021");
+        Text_knob(f, "Date", "12/2021");
         Text_knob(f, "Version", "1.0.0");
     }
 };
 
 static Iop *constructor(Node *node) { return new CircularRings(node); }
-const Iop::Description CircularRings::desc(CLASS, "Draw/CircularRings", constructor);
+const Iop::Description CircularRings::desc(CLASS, 0, constructor);

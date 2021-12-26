@@ -1,6 +1,8 @@
 
-static const char* const CLASS="CircularRamp";
-static const char* const HELP="A radial gradient";
+static const char *const CLASS = "CircularRamp";
+static const char *const HELP = "A radial gradient.\n\n"
+                                "Author: 12/2021, Falk Hofmann\n"
+                                "Version: 1.0.0";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -105,7 +107,7 @@ public:
         Tooltip(f, "Color at the gradients end.");
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
-        Text_knob(f, "Date", "Oct 2021");
+        Text_knob(f, "Date", "12/2021");
         Text_knob(f, "Version", "1.0.0");
     }
 

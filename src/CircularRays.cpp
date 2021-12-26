@@ -1,6 +1,8 @@
 
 static const char *const CLASS = "CircularRays";
-static const char *const HELP = "Radial distributed rays.";
+static const char *const HELP = "Radial distributed rays.\n\n"
+                                "Author: 12/2021, Falk Hofmann\n"
+                                "Version: 1.0.0";
 
 #include "DDImage/Iop.h"
 #include "DDImage/Format.h"
@@ -102,7 +104,7 @@ public:
 
         Tab_knob(f, "Info");
         Text_knob(f, "Author", "Falk Hofmann");
-        Text_knob(f, "Date", "Dez 2021");
+        Text_knob(f, "Date", "12/2021");
         Text_knob(f, "Version", "1.0.0");
     }
 };

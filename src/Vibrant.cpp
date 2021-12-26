@@ -8,10 +8,9 @@
  *
  */
 
-static const char *const HELP =
-    "This node adds colorfulness to less saturated areas.\n\n"
-    "Author: 2021, Falk Hofmann\n"
-    "Version: 1.0.0";
+static const char *const HELP = "This node adds colorfulness to less saturated areas.\n\n"
+                                "Author: 10/2021, Falk Hofmann\n"
+                                "Version: 1.0.0";
 
 #include "DDImage/PixelIop.h"
 #include "DDImage/Row.h"
@@ -64,13 +63,6 @@ public:
   const char *Class() const override { return d.name; }
   const char *node_help() const override { return HELP; }
 };
-
-static Iop *build(Node *node)
-{
-  return (new NukeWrapper(new Vibrant(node)))->channels(Mask_RGB);
-}
-
-const Iop::Description Vibrant::d("Vibrant", 0, build);
 
 enum
 {
@@ -217,3 +209,6 @@ void Vibrant::pixel_engine(const Row &in, int y, int x, int r,
     }
   }
 }
+
+static Iop *build(Node *node) { return (new NukeWrapper(new Vibrant(node)))->channels(Mask_RGB); }
+const Iop::Description Vibrant::d("Vibrant", 0, build);
