@@ -3,15 +3,11 @@ This Repository holds various custom plugins for the Software [Nuke](https://www
 
 ## Plugins
 
-- Circle create a circle based on a user defined center point. Color and falloff can be adjusted.
-
-- [CircularRamp](https://vimeo.com/640930193) creates a radial falloff on a user defined center. The Falloff itself can be rotated and will always be full frame. It is intended rather as a technical help than directly used as an image.
-
-- CircularRays create rays from a user defined center. The rays can be rotated per needs and the amount can be defned as well. Full umbers get entire rays, while fractions will create, like intented, one partly created ray in additions to the others.
-
-- CircularRings creates rings from a user defined center. Color and size can be adjusted. 
-
-- [Vibrant](https://vimeo.com/637353122) is a masked saturation operation, which adds colorfullness to less saturated parts of the image while affecting already saturated parts less.
+- [Circle](https://github.com/falkhofmann/nuke_plugins/wiki/Circle)
+- [CircuarRamp](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRamp)
+- [CircularRays](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRays)
+- [CircularRings](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRings)
+- [Vibrant](https://github.com/falkhofmann/nuke_plugins/wiki/Vibrant)
 
 
 ## Pre-compiled binaries
