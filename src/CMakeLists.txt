@@ -4,12 +4,14 @@ set(PLUGINS
     CircularRays
     CircularRings
     Kontrast
+    Scroll
     Vibrant
     )
 
 # Python Menu
 set(DRAW_NODES Circle CircularRamp CircularRays CircularRings)
 set(COLOR_NODES Kontrast Vibrant)
+set(TRANSFORM_NODES Scroll)
 
 # add nuke plugin linked to ddimage lib
 function(add_nuke_plugin PLUGIN_NAME)
@@ -33,6 +35,7 @@ endforeach()
 # create menu file 
 string(REPLACE ";" "\", \"" DRAW_NODES "\"${DRAW_NODES}\"")
 string(REPLACE ";" "\", \"" COLOR_NODES "\"${COLOR_NODES}\"")
+string(REPLACE ";" "\", \"" TRANSFORM_NODES "\"${TRANSFORM_NODES}\"")
 configure_file(../python/menu.py.in menu.py)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/menu.py" DESTINATION .)
