@@ -3,14 +3,16 @@ import nuke
 
 def create_plugins_menu():
     menus = {
-        "Draw": {"icon": "ToolbarDraw.png",
-                 "nodes": [@DRAW_NODES@]},
         "Color": {"icon": "ToolbarColor.png",
                   "nodes": [@COLOR_NODES@]},
+        "Draw": {"icon": "ToolbarDraw.png",
+                 "nodes": [@DRAW_NODES@]},
+        "Transform": {"icon": "ToolbarTransform.png",
+                      "nodes": [@TRANSFORM_NODES@]},
     }
 
     toolbar = nuke.menu("Nodes")
-    DeepCMenu = toolbar.addMenu("fhofmann", icon="godzilla.png")
+    DeepCMenu = toolbar.addMenu("Nukular", icon="godzilla.png")
 
     for menu, entry in menus.items():
         new = DeepCMenu.addMenu(menu, icon=entry["icon"])

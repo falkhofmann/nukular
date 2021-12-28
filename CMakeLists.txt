@@ -24,5 +24,5 @@ install(FILES
     python/init.py
     DESTINATION .)
 
-file(GLOB ICONS "icons/DeepC*.png")
+file(GLOB ICONS "icons/*.png")
 install(FILES ${ICONS} DESTINATION icons)
