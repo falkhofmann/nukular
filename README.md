@@ -8,6 +8,7 @@ Check out the [wiki](https://github.com/falkhofmann/nuke_plugins/wiki/) for deta
 - [CircuarRamp](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRamp)
 - [CircularRays](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRays)
 - [CircularRings](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRings)
+- [Kontrast](https://github.com/falkhofmann/nukular/wiki/Kontrast)
 - [Vibrant](https://github.com/falkhofmann/nuke_plugins/wiki/Vibrant)
 
 
