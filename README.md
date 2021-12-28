@@ -1,5 +1,5 @@
-This Repository holds various custom plugins for the Software [Nuke](https://www.foundry.com/products/nuke-family/nuke) from the Foundry.
-
+## Nukular
+Nukular is an apporach to build up a suite of [Nuke](https://www.foundry.com/products/nuke-family/nuke) plugins and blink-scripts, which can be installed at a whole.
 
 ## Plugins
 Check out the [wiki](https://github.com/falkhofmann/nuke_plugins/wiki/) for details on each node.
