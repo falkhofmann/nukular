@@ -2,6 +2,7 @@ This Repository holds various custom plugins for the Software [Nuke](https://www
 
 
 ## Plugins
+Check out the [wiki](https://github.com/falkhofmann/nuke_plugins/wiki/) for details on each node.
 
 - [Circle](https://github.com/falkhofmann/nuke_plugins/wiki/Circle)
 - [CircuarRamp](https://github.com/falkhofmann/nuke_plugins/wiki/CircularRamp)
