@@ -5,12 +5,14 @@ set(PLUGINS
     CircularRings
     Kontrast
     Scroll
+    Toon
     Vibrant
     )
 
 # Python Menu
 set(DRAW_NODES Circle CircularRamp CircularRays CircularRings)
 set(COLOR_NODES Kontrast Vibrant)
+set(FILTER_NODES Toon)
 set(TRANSFORM_NODES Scroll)
 
 # add nuke plugin linked to ddimage lib
@@ -35,6 +37,7 @@ endforeach()
 # create menu file 
 string(REPLACE ";" "\", \"" DRAW_NODES "\"${DRAW_NODES}\"")
 string(REPLACE ";" "\", \"" COLOR_NODES "\"${COLOR_NODES}\"")
+string(REPLACE ";" "\", \"" FILTER_NODES "\"${FILTER_NODES}\"")
 string(REPLACE ";" "\", \"" TRANSFORM_NODES "\"${TRANSFORM_NODES}\"")
 configure_file(../python/menu.py.in menu.py)
 
