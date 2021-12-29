@@ -38,10 +38,18 @@
 # fhofmann gitignore
 # ------------------
 
+# local builds
 build
 install
 release
-temp
+references
+templates
 
+# IDE
 .vscode
+
+# test command
 build_copy_test.sh
+
+# stub
+nuke.py
