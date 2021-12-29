@@ -5,14 +5,12 @@ set(PLUGINS
     CircularRings
     Kontrast
     Scroll
-    Toon
     Vibrant
     )
 
 # Python Menu
 set(DRAW_NODES Circle CircularRamp CircularRays CircularRings)
 set(COLOR_NODES Kontrast Vibrant)
-set(FILTER_NODES Toon)
 set(TRANSFORM_NODES Scroll)
 
 set(BLINK_NODES Clarity)
