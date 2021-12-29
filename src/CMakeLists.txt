@@ -15,6 +15,8 @@ set(COLOR_NODES Kontrast Vibrant)
 set(FILTER_NODES Toon)
 set(TRANSFORM_NODES Scroll)
 
+set(BLINK_NODES Clarity)
+
 # add nuke plugin linked to ddimage lib
 function(add_nuke_plugin PLUGIN_NAME)
     add_library(${PLUGIN_NAME} MODULE ${ARGN})
@@ -39,6 +41,10 @@ string(REPLACE ";" "\", \"" DRAW_NODES "\"${DRAW_NODES}\"")
 string(REPLACE ";" "\", \"" COLOR_NODES "\"${COLOR_NODES}\"")
 string(REPLACE ";" "\", \"" FILTER_NODES "\"${FILTER_NODES}\"")
 string(REPLACE ";" "\", \"" TRANSFORM_NODES "\"${TRANSFORM_NODES}\"")
+
+string(REPLACE ";" "\", \"" BLINK_NODES "\"${BLINK_NODES}\"")
+
+
 configure_file(../python/menu.py.in menu.py)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/menu.py" DESTINATION .)

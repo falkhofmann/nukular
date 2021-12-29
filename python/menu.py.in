@@ -1,3 +1,5 @@
+import os
+
 import nuke
 
 
@@ -14,14 +16,29 @@ def create_plugins_menu():
     }
 
     toolbar = nuke.menu("Nodes")
-    DeepCMenu = toolbar.addMenu("Nukular", icon="godzilla.png")
+    nukular = toolbar.addMenu("Nukular", icon="godzilla.png")
 
     for menu, entry in menus.items():
-        new = DeepCMenu.addMenu(menu, icon=entry["icon"])
+        new = nukular.addMenu(menu, icon=entry["icon"])
 
         for node in entry.get("nodes"):
             new.addCommand(node, "nuke.createNode('{}')".format(
                 node), icon="{}.png".format(node))
 
+    blink = nukular.addMenu("Blink")
+    for node in [@BLINK_NODES@]:
+        blink.addCommand(node, "create_blinkscript_node('{}')".format(node))
+
+
+def create_blinkscript_node(node_name):
+
+    blink_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                              "blinkscripts",
+                              "{}.blink".format(node_name))
+    blink_node = nuke.createNode("BlinkScript",
+                                 "kernelSourceFile {}".format(blink_path))
+
+    blink_node['reloadKernelSourceFile'].execute()
+    blink_node['kernelSourceFile'].setValue("")
 
 create_plugins_menu()

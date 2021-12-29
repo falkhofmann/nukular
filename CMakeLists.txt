@@ -24,5 +24,8 @@ install(FILES
     python/init.py
     DESTINATION .)
 
+file(GLOB BLINKS "src/*.blink")
+install(FILES ${BLINKS} DESTINATION blinkscripts)
+
 file(GLOB ICONS "icons/*.png")
 install(FILES ${ICONS} DESTINATION icons)
