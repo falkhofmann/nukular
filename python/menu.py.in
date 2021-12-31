@@ -23,10 +23,11 @@ def create_plugins_menu():
             new.addCommand(node, "nuke.createNode('{}')".format(
                 node), icon="{}.png".format(node))
 
-    blink = nukular.addMenu("Blink")
-    for node in [@BLINK_NODES@]:
-        blink.addCommand(node, "create_blinkscript_node('{}')".format(node))
-
+    """
+    # blink = nukular.addMenu("Blink")
+    # for node in [@BLINK_NODES@]:
+    #     blink.addCommand(node, "create_blinkscript_node('{}')".format(node))
+    """
 
 def create_blinkscript_node(node_name):
 

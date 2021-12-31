@@ -1,0 +1,85 @@
+#! /mnt/data/Apps/nuke/Nuke13.0v4/libnuke-13.0.4.so -nx
+version 13.0 v4
+Gizmo {
+ addUserKnob {20 Clarity}
+ addUserKnob {41 in l channel T Shuffle_in.in}
+ addUserKnob {26 "" +STARTLINE}
+ addUserKnob {41 MaskedKontrastKernel_contrast l contrast T BlinkScript6.MaskedKontrastKernel_contrast}
+ addUserKnob {41 MaskedKontrastKernel_pivot l pivot T BlinkScript6.MaskedKontrastKernel_pivot}
+ addUserKnob {41 "MaskedKontrastKernel_adapt saturation" l "adapt saturation" T "BlinkScript6.MaskedKontrastKernel_adapt saturation"}
+}
+ Input {
+  inputs 0
+  name Input1
+  xpos -443
+  ypos 348
+ }
+set Nf8a3b900 [stack 0]
+ Shuffle {
+  name Shuffle_in
+  xpos -582
+  ypos 470
+ }
+set Nf89f3900 [stack 0]
+ Blur {
+  channels rgb
+  size 16
+  name Blur3
+  xpos -724
+  ypos 470
+ }
+push $Nf89f3900
+ Merge2 {
+  inputs 2
+  operation from
+  bbox B
+  Achannels {rgba.red rgba.green rgba.blue -rgba.alpha}
+  Bchannels {rgba.red rgba.green rgba.blue -rgba.alpha}
+  output {rgba.red rgba.green rgba.blue -rgba.alpha}
+  name Merge5
+  xpos -724
+  ypos 514
+ }
+ Expression {
+  temp_name0 m
+  temp_expr0 "max(r, max(g,b))"
+  channel0 rgb
+  expr0 m
+  channel1 {-rgba.red -rgba.green -rgba.blue none}
+  channel2 {-rgba.red -rgba.green -rgba.blue none}
+  channel3 {none none none -rgba.alpha}
+  name Expression2
+  xpos -724
+  ypos 593
+ }
+push $Nf89f3900
+ BlinkScript {
+  inputs 2
+  recompileCount 77
+  ProgramGroup 1
+  KernelDescription "2 \"MaskedKontrastKernel\" iterate pixelWise da9850b28008cc729a5730415f56c77282d474467fe56a024e7598c0668eb90b 3 \"src\" Read Point \"mask\" Read Point \"dst\" Write Point 3 \"contrast\" Float 4 AACAPwAAgD8AAIA/AACAPw== \"pivot\" Float 1 7FE4Pg== \"adapt saturation\" Bool 1 AQ== 3 \"contrast\" 4 1 \"pivot\" 1 1 \"adapt_saturation\" 1 1 2 \"_coefficients\" Float 3 1 AAAAAAAAAAAAAAAAAAAAAA== \"_saturation\" Float 1 1 AAAAAA=="
+  kernelSource "\nkernel MaskedKontrastKernel : ImageComputationKernel<ePixelWise>\n\{\n  Image<eRead, eAccessPoint, eEdgeClamped> src;\n  Image<eRead, eAccessPoint, eEdgeClamped> mask;\n  Image<eWrite> dst;\n\n  param:\n    float4 contrast;\n    float pivot;\n    bool adapt_saturation;\n\n  local:\n    float3 _coefficients;\n    float _saturation;\n\n  void define() \{\n    defineParam(contrast, \"contrast\", \{1.0f, 1.0f, 1.0f, 1.0f\});\n    defineParam(pivot, \"pivot\", 0.18f);\n    defineParam(adapt_saturation, \"adapt saturation\", true);\n  \}\n  void init() \{\n    _coefficients.x = 0.2126f;\n    _coefficients.y = 0.7152f;\n    _coefficients.z = 0.0722f;\n    _saturation = ((((contrast.x + contrast.y + contrast.z)/3.0f) - 1.0f) * 0.1) + 1.0f;\n  \}\n\n  void process() \{\n    float4 output;\n    float4 used_mask = mask();\n    output = ((1.0f - used_mask) * src()) + used_mask * (pow(src() / pivot, contrast) * pivot);\n\n    if (adapt_saturation)\n    \{\n      float luma = output.x * _coefficients.x\n                 + output.y * _coefficients.y\n                 + output.z * _coefficients.z;\n      output = (output - luma) * _saturation + luma;\n    \}\n    dst() = output;\n  \}\n\};\n"
+  rebuild ""
+  "MaskedKontrastKernel_adapt saturation" false
+  rebuild_finalise ""
+  name BlinkScript6
+  xpos -582
+  ypos 587
+ }
+push $Nf8a3b900
+ ShuffleCopy {
+  inputs 2
+  red red
+  green green
+  blue blue
+  out {{{parent.Shuffle_in.in}}}
+  name ShuffleCopy1
+  xpos -443
+  ypos 593
+ }
+ Output {
+  name Output1
+  xpos -443
+  ypos 665
+ }
+end_group
