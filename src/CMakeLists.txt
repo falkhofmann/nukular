@@ -10,10 +10,8 @@ set(PLUGINS
 
 # Python Menu
 set(DRAW_NODES Circle CircularRamp CircularRays CircularRings)
-set(COLOR_NODES Kontrast Vibrant)
+set(COLOR_NODES Clarity Kontrast Vibrant)
 set(TRANSFORM_NODES Scroll)
-
-set(BLINK_NODES Clarity)
 
 # add nuke plugin linked to ddimage lib
 function(add_nuke_plugin PLUGIN_NAME)
@@ -39,9 +37,6 @@ string(REPLACE ";" "\", \"" DRAW_NODES "\"${DRAW_NODES}\"")
 string(REPLACE ";" "\", \"" COLOR_NODES "\"${COLOR_NODES}\"")
 string(REPLACE ";" "\", \"" FILTER_NODES "\"${FILTER_NODES}\"")
 string(REPLACE ";" "\", \"" TRANSFORM_NODES "\"${TRANSFORM_NODES}\"")
-
-string(REPLACE ";" "\", \"" BLINK_NODES "\"${BLINK_NODES}\"")
-
 
 configure_file(../python/menu.py.in menu.py)
 

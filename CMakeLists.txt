@@ -24,8 +24,11 @@ install(FILES
     python/init.py
     DESTINATION .)
 
-file(GLOB BLINKS "src/*.blink")
-install(FILES ${BLINKS} DESTINATION blinkscripts)
+file(GLOB BLINK "src/*.blink")
+install(FILES ${BLINK} DESTINATION blink)
 
-file(GLOB ICONS "icons/*.png")
-install(FILES ${ICONS} DESTINATION icons)
+file(GLOB ICON "icon/*.png")
+install(FILES ${ICON} DESTINATION icon)
+
+file(GLOB GIZMO "gizmo/*.gizmo")
+install(FILES ${GIZMO} DESTINATION gizmo)

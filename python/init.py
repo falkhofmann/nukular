@@ -1,3 +1,4 @@
 import nuke
 
-nuke.pluginAddPath("./icons")
+nuke.pluginAddPath("./icon")
+nuke.pluginAddPath("./gizmo")
